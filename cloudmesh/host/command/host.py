@@ -766,22 +766,33 @@ class HostCommand(PluginCommand):
 
         elif arguments.config and arguments.proxy:
 
-            if '@'not in arguments.PROXY or '.local' not in arguments.PROXY:
+            if '@'not in arguments.PROXY not in arguments.PROXY:
                 raise Exception('Please provide user with proxy host e.g '
                                 'pi@red.local')
+
+            use_local = yn_choice("Use .local?")
 
             user = arguments.PROXY.split('@')[0]
             names = Parameter.expand(arguments.NAMES)
             proxy = arguments.PROXY
             proxy_host = arguments.PROXY.split('@')[1].replace(".local", "")
+            print(proxy_host)
 
-            ssh_config_output = f'\n##### CLOUDMESH PROXY CONFIG #####\n\n'\
-                                f'Host {proxy_host}\n' \
-                                f'     HostName {proxy_host}.local\n' \
-                                f'     User {user}\n' \
-                                f'     StrictHostKeyChecking no\n\n'
+            if use_local:
+                ssh_config_output = f'\n##### CLOUDMESH PROXY CONFIG #####\n\n'\
+                                    f'Host {proxy_host}\n' \
+                                    f'     HostName {proxy_host}.local\n' \
+                                    f'     User {user}\n' \
+                                    f'     StrictHostKeyChecking no\n\n'
+            else:
+                ssh_config_output = f'\n##### CLOUDMESH PROXY CONFIG #####\n\n'\
+                                    f'Host {proxy_host}\n' \
+                                    f'     HostName {proxy_host}\n' \
+                                    f'     User {user}\n' \
+                                    f'     StrictHostKeyChecking no\n\n'
 
             for name in names:
+                print(name)
                 ssh_config_template = f'Host {name}\n' \
                                       f'     HostName {name}\n' \
                                       f'     User {user}\n' \
